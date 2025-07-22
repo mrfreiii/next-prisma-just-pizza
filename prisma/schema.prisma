@@ -12,9 +12,10 @@ model User {
   fullName   String
   email      String   @unique
   password   String
+  provider   String?
+  providerId String?
   role       UserRole @default(USER)
-  provider   String
-  providerId String
+  verified   DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -24,78 +25,67 @@ model User {
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  imageUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
-
-  ingredients Ingredient[]
+  id          Int              @id @default(autoincrement())
+  name        String
+  imageUrl    String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  categoryId  Int
+  category    Category         @relation(fields: [categoryId], references: [id])
   variants    ProductVariant[]
+  ingredients Ingredient[]     @relation("IngredientToProduct")
 }
 
 model ProductVariant {
-  id        Int  @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   price     Int
-  size      Int? // small, medium, large
-  pizzaType Int? // slim, fat
-
-  product   Product @relation(fields: [productId], references: [id])
+  size      Int?
+  pizzaType Int?
   productId Int
-
-  cartItem CartItem[]
+  cartItem  CartItem[]
+  product   Product    @relation(fields: [productId], references: [id])
 }
 
 model Ingredient {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
   price     Int
   imageUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products  Product[]
-  cartItems CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  cartItems CartItem[] @relation("CartItemToIngredient")
+  products  Product[]  @relation("IngredientToProduct")
 }
 
 model Cart {
-  id          Int      @id @default(autoincrement())
-  totalAmount Int      @default(0)
+  id          Int        @id @default(autoincrement())
+  totalAmount Int        @default(0)
   token       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?  @unique
-
-  items CartItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  userId      Int?       @unique
+  user        User?      @relation(fields: [userId], references: [id])
+  items       CartItem[]
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  cart   Cart @relation(fields: [cartId], references: [id])
-  cartId Int
-
-  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  id               Int            @id @default(autoincrement())
+  quantity         Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  cartId           Int
   productVariantId Int
-
-  ingredients Ingredient[] // additional ingredients
+  cart             Cart           @relation(fields: [cartId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  ingredients      Ingredient[]   @relation("CartItemToIngredient")
 }
 
 model Order {
@@ -112,18 +102,16 @@ model Order {
   comment     String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  userId      Int?
+  user        User?       @relation(fields: [userId], references: [id])
 }
 
 model VerificationCode {
   id        Int      @id @default(autoincrement())
   code      String
   createdAt DateTime @default(now())
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum OrderStatus {
