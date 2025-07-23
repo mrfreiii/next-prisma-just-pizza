@@ -39,7 +39,7 @@ async function up() {
     const pizza1 = await prisma.product.create({
         data: {
             name: "Пепперони фреш",
-            imageUrl: "images/pizzas/pepperoniFresh30.webp",
+            imageUrl: "/images/pizzas/pepperoniFresh30.webp",
             categoryId: 1,
             ingredients: {
                 connect: seedIngredients.slice(0, 5),
@@ -50,7 +50,7 @@ async function up() {
     const pizza2 = await prisma.product.create({
         data: {
             name: "Сырная",
-            imageUrl: "images/pizzas/cheese30.webp",
+            imageUrl: "/images/pizzas/cheese30.webp",
             categoryId: 1,
             ingredients: {
                 connect: seedIngredients.slice(5, 10),
@@ -61,7 +61,7 @@ async function up() {
     const pizza3 = await prisma.product.create({
         data: {
             name: "Чоризо фреш",
-            imageUrl: "images/pizzas/chorizoFresh30.webp",
+            imageUrl: "/images/pizzas/chorizoFresh30.webp",
             categoryId: 1,
             ingredients: {
                 connect: seedIngredients.slice(10, 40),
