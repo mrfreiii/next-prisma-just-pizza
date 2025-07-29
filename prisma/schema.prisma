@@ -50,6 +50,8 @@ model ProductVariant {
   size      Int?
   pizzaType Int?
   productId Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   cartItem  CartItem[]
   product   Product    @relation(fields: [productId], references: [id])
 }

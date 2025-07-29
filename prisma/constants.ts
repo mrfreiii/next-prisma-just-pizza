@@ -35,7 +35,7 @@ export const seedIngredients = [
     {
         name: 'Острый перец халапеньо',
         price: 59,
-        imageUrl: '/images/ingredients/jalapeno.png.png',
+        imageUrl: '/images/ingredients/jalapeno.png',
     },
     {
         name: 'Нежный цыпленок',

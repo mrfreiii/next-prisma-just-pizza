@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/shared/header";
+import { ReactNode } from "react";
 
 const nunito = Nunito({
     variable: "--font-nunito",
@@ -9,23 +8,15 @@ const nunito = Nunito({
     weight: ["400", "500", "600", "700", "800", "900",]
 });
 
-export const metadata: Metadata = {
-    title: "Just Pizza | Main",
-};
-
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function AppLayout({ children }: { children: ReactNode }) {
     return (
         <html lang="en" data-scroll-behavior="smooth">
-            <body className={nunito.variable}>
-                <main className={"min-h-screen"}>
-                    <Header />
-                    {children}
-                </main>
-            </body>
+        <head>
+            <link data-rh="true" rel="icon" href="/favicon.ico"/>
+        </head>
+        <body className={nunito.variable}>
+        {children}
+        </body>
         </html>
     );
 }
