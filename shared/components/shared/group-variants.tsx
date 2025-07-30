@@ -3,16 +3,16 @@
 import { FC } from "react";
 import { cn } from "@/shared/lib/utils";
 
-type Variant = {
+export type VariantType = {
     name: string;
     value: string;
     disabled?: boolean;
 }
 
 type Props = {
-    items: readonly Variant[];
-    onClick?: (value: Variant['value']) => void;
-    value?: Variant['value'];
+    items: readonly VariantType[];
+    onClick?: (value: VariantType['value']) => void;
+    value?: VariantType['value'];
     className?: string;
 }
 

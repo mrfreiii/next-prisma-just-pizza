@@ -1,19 +1,14 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { cn } from "@/shared/lib/utils";
 import { PizzaImage } from "@/shared/components/shared/pizza-image";
 import { Title } from "@/shared/components/shared/title";
 import { Button } from "@/shared/components/ui";
 import { GroupVariants } from "@/shared/components/shared/group-variants";
-import {
-    mapPizzaType,
-    PizzaSize,
-    pizzaSizes,
-    PizzaType,
-    pizzaTypes
-} from "@/shared/constants/pizza";
+import { PizzaSize, PizzaType, pizzaTypes } from "@/shared/constants/pizza";
 import { Ingredient, ProductVariant } from "@prisma/client";
 import { IngredientItem } from "@/shared/components/shared/ingredient-item";
-import { useSet } from "react-use";
+import { usePizzaOptions } from "@/shared/hooks/use-pizza-options";
+import { getPizzaDetails } from "@/shared/lib/get-pizza-details";
 
 type Props = {
     imageUrl: string;
@@ -33,34 +28,24 @@ export const ChoosePizzaForm: FC<Props> = (
         onClickAddCart,
         className
     }) => {
-    const [size, setSize] = useState<PizzaSize>(20);
-    const [type, setType] = useState<PizzaType>(1);
+    const {
+        size,
+        type,
+        availableSizes,
+        selectedIngredients,
+        setSize,
+        setType,
+        addIngredient
+    } = usePizzaOptions({variants});
 
-    const [selectedIngredients, {toggle: addIngredient}] = useSet(new Set<number>([]));
+    const {textDetails, totalPrice} = getPizzaDetails({
+        type,
+        size,
+        variants,
+        ingredients,
+        selectedIngredients
+    });
 
-    const textDetails = `${size}см, ${mapPizzaType[type]} тесто`;
-
-    const pizzaPrice = variants.find((v) => v.pizzaType === type && v.size === size)?.price || 0;
-    const ingredientsPrice = ingredients
-        .filter((ing) => selectedIngredients.has(ing.id))
-        .reduce((acc, ing) => acc + ing.price, 0)
-
-    const totalPrice = pizzaPrice + ingredientsPrice;
-
-    const availablePizzas = variants.filter((v)=>v.pizzaType === type);
-    const availablePizzaSizes = pizzaSizes.map((pizzaSize)=>({
-        name: pizzaSize.name,
-        value: pizzaSize.value,
-        disabled: !availablePizzas.some((pizza) => Number(pizza.size) === Number(pizzaSize.value))
-    }));
-
-    useEffect(()=>{
-        const availableSize = availablePizzaSizes?.find((item)=>!item.disabled);
-
-        if(availableSize){
-            setSize(Number(availableSize.value) as PizzaSize);
-        }
-    }, [type])
 
     return (
         <div className={cn(className, "flex flex-1")}>
@@ -73,7 +58,7 @@ export const ChoosePizzaForm: FC<Props> = (
 
                 <div className={"flex flex-col gap-4 mt-5"}>
                     <GroupVariants
-                        items={availablePizzaSizes}
+                        items={availableSizes}
                         value={String(size)}
                         onClick={(value) => setSize(Number(value) as PizzaSize)}
                     />
