@@ -10,3 +10,8 @@ export type CartItemDTO = CartItem & {
 export interface CartDto extends Cart {
     items: CartItemDTO[];
 }
+
+export interface CreateCartItemValues {
+    productVariantId: number;
+    ingredients?: number[];
+}

@@ -1,18 +1,18 @@
 "use client";
 
-import { FC, useEffect, useRef } from "react";
 import { useIntersection } from "react-use"
+import { FC, useEffect, useRef } from "react";
 
 import { cn } from "@/shared/lib/utils";
 import { Title } from "@/shared/components/shared/title";
-import { ProductCard } from "@/shared/components/shared/product-card";
 import { useCategoryStore } from "@/shared/store/category";
+import { ProductWithRelationsType } from "@/@types/prisma";
+import { ProductCard } from "@/shared/components/shared/product-card";
 
 type Props = {
     title: string;
     categoryId: number;
-    // eslint-disable-next-line
-    items: any[];
+    items: ProductWithRelationsType[];
     className?: string;
     listClassName?: string;
 }
@@ -51,6 +51,7 @@ export const ProductsGroupList: FC<Props> = (
                         name={item.name}
                         imageUrl={item.imageUrl}
                         price={item.variants[0].price}
+                        ingredients={item.ingredients}
                     />
                 ))}
             </div>

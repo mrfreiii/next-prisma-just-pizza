@@ -6,7 +6,22 @@ import { GroupVariants } from "@/shared/components/shared/group-variants";
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
-    const product = await prisma.product.findFirst({ where: { id: Number(id) } });
+    const product = await prisma.product.findFirst({
+        where: { id: Number(id) },
+        include: {
+            ingredients: true,
+            category: {
+                include: {
+                    products: {
+                        include: {
+                            variants: true,
+                        }
+                    }
+                }
+            },
+            variants: true,
+        }
+    });
 
     if(!product){
         return notFound()

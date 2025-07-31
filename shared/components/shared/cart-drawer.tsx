@@ -47,15 +47,16 @@ export const CartDrawer: FC<Props> = ({className, children}) => {
             <SheetContent className={"flex flex-col justify-between pb-0 bg-[#F4F1EE]"}>
                 <SheetHeader>
                     <SheetTitle>
-                        В корзине <span className={"font-bold"}>{items.length} товара</span>
+                        В корзине <span
+                        className={"font-bold"}>{items.length} товара</span>
                     </SheetTitle>
                 </SheetHeader>
 
                 <div className={"mt-5 overflow-auto flex-1"}>
-                    <div className={"mb-2"}>
-                        {items.map((item) => (
+
+                    {items.map((item) => (
+                        <div className={"mb-2"} key={item.id}>
                             <CartDrawerItem
-                                key={item.id}
                                 id={item.id}
                                 imageUrl={item.imageUrl}
                                 details={
@@ -72,8 +73,8 @@ export const CartDrawer: FC<Props> = ({className, children}) => {
                                 onClickCountButton={(type) => onClickCountButton(item.id, item.quantity, type)}
                                 onClickRemove={() => removeCartItem(item.id)}
                             />
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
 
                 <SheetFooter className={"bg-white p-8"}>

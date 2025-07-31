@@ -15,7 +15,8 @@ type Props = {
     name: string;
     ingredients: Ingredient[];
     variants: ProductVariant[];
-    onClickAddCart?: () => void;
+    onSubmit: (variantId: number, ingredients: number[]) => void;
+    loading: boolean;
     className?: string;
 }
 
@@ -25,7 +26,8 @@ export const ChoosePizzaForm: FC<Props> = (
         name,
         ingredients,
         variants,
-        onClickAddCart,
+        loading,
+        onSubmit,
         className
     }) => {
     const {
@@ -33,6 +35,7 @@ export const ChoosePizzaForm: FC<Props> = (
         type,
         availableSizes,
         selectedIngredients,
+        currentVariantId,
         setSize,
         setType,
         addIngredient
@@ -45,6 +48,12 @@ export const ChoosePizzaForm: FC<Props> = (
         ingredients,
         selectedIngredients
     });
+
+    const addPizza = () => {
+        if(currentVariantId){
+            onSubmit(currentVariantId, Array.from(selectedIngredients))
+        }
+    };
 
 
     return (
@@ -87,6 +96,8 @@ export const ChoosePizzaForm: FC<Props> = (
                 </div>
 
                 <Button
+                    loading={loading}
+                    onClick={addPizza}
                     className={"h-[55px] px-10 text-base rounded-[18px] w-full mt-10"}>
                     Добавить в корзину за {totalPrice} ₽
                 </Button>
