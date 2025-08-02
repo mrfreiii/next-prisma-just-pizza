@@ -1,5 +1,4 @@
 import { prisma } from "@/prisma/prisma-client";
-import { max } from "@floating-ui/utils";
 
 export interface GetSearchParams {
     query?: string;

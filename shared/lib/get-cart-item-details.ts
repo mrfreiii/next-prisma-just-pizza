@@ -8,8 +8,8 @@ export const getCartItemDetails = (
         pizzaSize,
         ingredients,
     }:{
-        pizzaType: PizzaType;
-        pizzaSize: PizzaSize;
+        pizzaType?: PizzaType;
+        pizzaSize?: PizzaSize;
         ingredients: CartStateItem["ingredients"];
     }): string => {
     const details = [];
