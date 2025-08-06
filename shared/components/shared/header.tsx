@@ -9,7 +9,7 @@ import { Button } from "@/shared/components/ui";
 import { Container } from "@/shared/components/shared/container";
 import { CartButton } from "@/shared/components/shared/cart-button";
 import { SearchInput } from "@/shared/components/shared/search-input";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useSession, signIn } from "next-auth/react";
 import { ProfileButton } from "@/shared/components/shared/profile-button";
@@ -22,15 +22,31 @@ type Props = {
 }
 
 export const Header: FC<Props> = ({hasSearch = true, hasCart = true, className}) => {
-    const {data: session} = useSession();
+    const router = useRouter();
     const searchParams = useSearchParams();
 
     const [openAuthModal,setOpenAuthModal] = useState<boolean>(false);
 
-    console.log(session)
     useEffect(() => {
+        let toastMessage = "";
+
         if (searchParams.has("paid")) {
-            toast.success("Заказ успешно оплачен! Информация отправлена на почту.")
+            toastMessage = "Заказ успешно оплачен! Информация отправлена на почту."
+        }
+
+        if (searchParams.has("verified")) {
+            toastMessage = "Почта успещно подтверждена"
+        }
+
+        if(toastMessage){
+            setTimeout(()=>{
+                router.replace("/");
+
+                toast.success(toastMessage, {
+                    duration: 3000,
+                })
+            }, 1000)
+
         }
     }, [])
 
