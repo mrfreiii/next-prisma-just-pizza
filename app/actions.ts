@@ -3,11 +3,16 @@
 import { CheckoutFormValues } from "@/shared/constants/checkout-form-schema";
 import { cookies } from "next/headers";
 import { prisma } from "@/prisma/prisma-client";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, Prisma } from "@prisma/client";
 import { sendEmail } from "@/shared/lib/sendEmail";
 import { PayOrderTemplate } from "@/shared/components/shared/email-templates/pay-order";
 import { ReactNode } from "react";
 import { createPayment } from "@/shared/lib/create-payment";
+import { getUserSession } from "@/shared/lib/get-user-session";
+import { hashSync } from "bcrypt";
+import {
+    VerificationUserTemplate
+} from "@/shared/components/shared/email-templates/verification-user";
 
 export async function createOrder(data: CheckoutFormValues) {
     try {
@@ -108,5 +113,81 @@ export async function createOrder(data: CheckoutFormValues) {
         return paymentUrl;
     } catch (e) {
         console.error("[CreateOrder] Server error", e);
+    }
+}
+
+export async function updateUserInfo(body: Prisma.UserUpdateInput) {
+    try {
+        const currentUser = await getUserSession();
+        if (!currentUser) {
+            throw new Error("User not found");
+        }
+
+        const foundUser = await prisma.user.findFirst({
+            where: {
+                id: Number(currentUser.id)
+            }
+        })
+
+        await prisma.user.update({
+            where: {
+                id: Number(currentUser.id)
+            },
+            data: {
+                fullName: body.fullName,
+                email: body.email,
+                password: body.password ? hashSync(body.password as string, 10) : foundUser?.password,
+            }
+        })
+
+    } catch (err) {
+        console.log("[UPDATE_USER], Error:", err)
+        throw err;
+    }
+}
+
+export async function registerUser(body: Prisma.UserCreateInput) {
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                email: body.email,
+            },
+        });
+
+        if (user) {
+            if (!user.verified) {
+                throw new Error("Почта не подтверждена");
+            }
+
+            throw new Error("Пользователь уже существует");
+        }
+
+        const createdUser = await prisma.user.create({
+            data: {
+                fullName: body.fullName,
+                email: body.email,
+                password: hashSync(body.password, 10),
+            },
+        });
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await prisma.verificationCode.create({
+            data: {
+                code,
+                userId: createdUser.id,
+            },
+        });
+
+        await sendEmail({
+            to: createdUser.email,
+            subject: "Just Pizza / Подтверждение регистрации",
+            template: VerificationUserTemplate({
+                code,
+            }) as ReactNode
+        });
+    } catch (error) {
+        console.log("Error [CREATE_USER]", error);
+        throw error;
     }
 }

@@ -45,7 +45,11 @@ export async function POST(req: NextRequest) {
                     orderId: order.id
                 }) as ReactNode
             })
+
+            return NextResponse.json({ message: "success" });
         }
+
+        return NextResponse.json({ message: "error" });
     } catch (e){
         console.log("[Checkout Callback] Error:", e);
         return NextResponse.json({ error: "Server Error" });

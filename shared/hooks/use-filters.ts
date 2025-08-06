@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSet } from "react-use";
 import { useSearchParams } from "next/navigation";
 
@@ -46,7 +46,7 @@ export const useFilters = (): ReturnProps => {
         }))
     }
 
-    return {
+    return useMemo(() => ({
         sizes,
         pizzaTypes,
         selectedIngredients,
@@ -55,5 +55,5 @@ export const useFilters = (): ReturnProps => {
         setPizzaTypes: togglePizzaTypes,
         setSizes: toggleSizes,
         setSelectedIngredients: toggleIngredients,
-    }
+    }), [sizes, pizzaTypes, selectedIngredients, prices])
 }
